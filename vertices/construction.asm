@@ -1,10 +1,38 @@
-%include "node_macro.asm"
-%include "node_data.asm"
-
 %ifndef NODE_CONSTRUCTION
 %define NODE_CONSTRUCTION
 
+%include "vertices/data.asm"
+
+extern exit
+
 section .text
+    
+; 1 - elements count
+; 2 - vertex name
+%macro ALLOC_NODE 2
+    mov         ecx, %1
+    imul        ecx, 8
+    add         ecx, 4
+    push        ecx
+    call        malloc
+    test        eax, eax
+    jz          _bad_alloc_exit
+    add         esp, 4
+    mov         [%2], eax
+    mov         dword [eax], %1
+%endmacro
+
+;  1 - vertex to which we are adding
+;  2 - vertex being added
+;  3 - ransition cost
+%macro ADD_NODE 3
+    mov         eax, [%1]
+    mov         edx, [%2]
+    mov         dword [eax+ecx], edx
+    add         ecx, 4
+    mov         dword [eax+ecx], %3
+    add         ecx, 4
+%endmacro 
 
 _construct_nodes:
     ALLOC_NODE  1, a ; e
@@ -35,56 +63,62 @@ _construct_nodes:
     ret
     
 _init_nodes:
-    ; offset counter
-    mov         ebx, 4 
+    ; ecx - offset counter
+    mov         ecx, 4 
      
     ADD_NODE    a, e, 3
-    mov         ebx, 4
+    mov         ecx, 4
     
     ADD_NODE    e, c, 3
     ADD_NODE    e, b, 4
     ADD_NODE    e, x, 5
-    mov         ebx, 4
+    mov         ecx, 4
     
     ADD_NODE    b, c, 2
-    mov         ebx, 4
+    mov         ecx, 4
     
     ADD_NODE    c, x, 3  
     ADD_NODE    c, n, 5
-    mov         ebx, 4
+    mov         ecx, 4
     
     ADD_NODE    x, n, 2
     ADD_NODE    x, o, 4
-    mov         ebx, 4
+    mov         ecx, 4
     
     ADD_NODE    n, a, 6 
     ADD_NODE    n, o, 4
-    mov         ebx, 4
+    mov         ecx, 4
     
     ADD_NODE    o, e, 6
     ADD_NODE    o, m, 1
-    mov         ebx, 4
+    mov         ecx, 4
     
     ADD_NODE    m, d, 1 
     ADD_NODE    m, f, 2
-    mov         ebx, 4
+    mov         ecx, 4
     
     ADD_NODE    d, e, 7
     ADD_NODE    d, g, 3  
     ADD_NODE    d, a, 9
-    mov         ebx, 4
+    mov         ecx, 4
     
     ADD_NODE    g, n, 6 
     ADD_NODE    g, b, 5
     ADD_NODE    g, f, 2
-    mov         ebx, 4
+    mov         ecx, 4
     
     ADD_NODE    f, l, 2
-    mov         ebx, 4
+    mov         ecx, 4
     
     ADD_NODE    l, b, 7 
     ADD_NODE    l, a, 10
-    mov         ebx, 4  
+    mov         ecx, 4  
     ret
     
 %endif
+
+_bad_alloc_exit:
+    NEWLINE
+    PRINT_STRING "BAD ALLOC EXIT"
+    mov         eax, 1
+    call        exit
