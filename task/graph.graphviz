@@ -1,0 +1,34 @@
+digraph 
+{
+    a -> e[label="3", color="red"];
+    n -> a[label="6"];
+    b -> c[label="2"];
+    e -> c[label="3", color="red"];
+    d -> e[label="7"];
+    d -> a[label="9"];
+    e -> b[label="4"];
+    a -> f[label="7"];
+    f -> l[label="2", color="red"];   
+    g -> b[label="5"];
+    m -> d[label="1", color="red"];
+    m -> f[label="2"];
+    
+    n -> o[label="4", color="red"];
+    
+    o -> e[label="6"];
+    o -> m[label="1", color="red"];
+    e -> x[label="5"];
+    c -> x[label="3", color="red"];
+    c -> n[label="5"];
+    
+    x -> n[label="2", color="red"];
+    x -> o[label="4"];
+    
+    g -> n[label="6"];
+    d -> g[label="3", color="red"];
+    
+    g -> f[label="2", color="red"];
+    
+    l -> b[label="7", color="red"]
+    l -> a[label="10"]
+}
