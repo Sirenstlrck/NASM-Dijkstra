@@ -1,24 +1,23 @@
-%ifndef NODE_DATA
-%define NODE_DATA
+%ifndef VERTICES_DATA
+%define VERTICES_DATA
 
 section .data    
-    ; Список указателей на узлы, в которых первые 4 байта отводятся на 
-    ; количество узлов, к которым можно пройти из этого узла
+    ; list of pointers to vertices, where the first  4 bytes are reserved for  
+    ; the number of vertices to which one can transition from this vertex
     
-    ; Далее идут записи по 8 байт. Первые 4 байта записи - указатель 
-    ; на другой узел, последние - "цена" прохода к нему 
+    ; following this are records of 8 bytes each. The first  4 bytes of the record -  
+    ; a pointer to another vertex, and the last - the "cost" of passing to it
     
-    a dd 0
-    e dd 0
-    b dd 0
-    c dd 0
-    x dd 0
-    n dd 0
-    o dd 0
-    m dd 0
-    d dd 0
-    g dd 0
-    f dd 0
-    l dd 0
-    
+    a_ptr DD 0
+    e_ptr DD 0
+    b_ptr DD 0
+    c_ptr DD 0
+    x_ptr DD 0
+    n_ptr DD 0
+    o_ptr DD 0
+    m_ptr DD 0
+    d_ptr DD 0
+    g_ptr DD 0
+    f_ptr DD 0
+    l_ptr DD 0    
 %endif

@@ -1,7 +1,7 @@
 %include "io/io.inc"
 %include "vertices/data.asm"
 %include "vertices/construction.asm"
-%include "vertices/helpers.asm"
+%include "vertices/visited_vertices_list.asm"
     
 extern malloc
 extern exit
@@ -14,38 +14,67 @@ CMAIN:
     
     call        _construct_nodes
     
-    push        dword [a]
-    call        _travel
+    push        DWORD [a_ptr]
+    push        DWORD [b_ptr]
+    call        _dijkstra
     add         esp, 8
 
     jmp         _ok_exit
     
-_travel:
+_dijkstra:
     push        ebp
     mov         ebp, esp
     
-    push        dword [ebp + 8]
+    push        DWORD [ebp + 12] ; [ebp - 4] - from
+    push        DWORD [ebp + 8]  ; [ebp - 8] - to
+    push        DWORD 0          ; [ebp - 12] - accumulator
+
+    mov         ebx, [ebp - 4]
     
-    call        _find_min_index
-    pop         ebx
-    imul        eax, 8
-    add         eax, ebx
-    add         eax, 4
-    mov         eax, [eax]
-    
-    NEWLINE
-    PRINT_STRING "MOVING FROM "
-    PRINT_DEC   4, ebx
-    PRINT_STRING " TO "
-    PRINT_DEC   4, eax
-    NEWLINE
-    
-    push        eax
-    call        _travel
-    
+    .loop_start:
+        cmp         ebx, [ebp - 8]
+        je          .destination_reached
+        
+        NEWLINE
+        PRINT_STRING "Moving from "
+        PRINT_DEC   4, ebx
+        push        ebx
+        call        _add_visited_vertex
+        call        _find_min_not_visited_vertex_index 
+        add         esp, 4
+        PRINT_STRING " to "
+        PRINT_DEC   4, ebx
+        PRINT_STRING " at cost of "
+        PRINT_DEC   4, eax
+        NEWLINE
+       
+        pop         edx
+        add         edx, eax
+        push        edx  
+
+        cmp         ecx, -1
+        jne         .loop_start
+        jmp         .destination_not_reached
+        
+        .destination_reached:
+        NEWLINE
+        PRINT_STRING "Destination reached at a cost of "
+        PRINT_DEC   4, [ebp - 12]
+        NEWLINE
+        jmp         .loop_end
+        
+        .destination_not_reached:
+        NEWLINE
+        PRINT_STRING "Destination not reached"
+        NEWLINE
+        jmp         .loop_end
+        
+    .loop_end:
+
     mov         esp, ebp
     pop         ebp
     ret
+    
 
 _ok_exit:
     NEWLINE
